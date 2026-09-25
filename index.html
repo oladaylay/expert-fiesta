@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spin the Wheel</title>
+  <meta name="description" content="Enter some options, spin the wheel, and let chance decide.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>Spin the Wheel</h1>
+    <button id="theme-toggle" class="icon-btn" type="button" aria-label="Toggle dark mode">◐</button>
+  </header>
+
+  <main class="layout">
+    <section class="wheel-panel" aria-label="Wheel">
+      <div class="wheel-wrap">
+        <div class="pointer" aria-hidden="true"></div>
+        <canvas id="wheel" role="img" aria-label="Prize wheel"></canvas>
+        <button id="spin-btn" class="spin-btn" type="button">SPIN</button>
+      </div>
+      <p class="hint">Click the wheel or press <kbd>Space</kbd> to spin</p>
+      <p id="result" class="result" aria-live="polite"></p>
+    </section>
+
+    <section class="entries-panel" aria-label="Entries">
+      <div class="panel-head">
+        <h2>Entries <span id="count" class="count">0</span></h2>
+        <div class="panel-actions">
+          <button id="shuffle-btn" type="button" class="btn">Shuffle</button>
+          <button id="sort-btn" type="button" class="btn">Sort</button>
+        </div>
+      </div>
+      <label for="entries" class="sr-only">One entry per line</label>
+      <textarea id="entries" spellcheck="false" placeholder="One entry per line"></textarea>
+
+      <div class="options">
+        <label><input type="checkbox" id="opt-sound" checked> Sound</label>
+        <label><input type="checkbox" id="opt-remove"> Remove winner automatically</label>
+        <label>Spin time
+          <select id="opt-duration">
+            <option value="3000">Short</option>
+            <option value="5500" selected>Normal</option>
+            <option value="9000">Long</option>
+          </select>
+        </label>
+      </div>
+
+      <details class="history">
+        <summary>History <span id="history-count" class="count">0</span></summary>
+        <ol id="history-list"></ol>
+        <button id="clear-history" type="button" class="btn btn-small">Clear history</button>
+      </details>
+    </section>
+  </main>
+
+  <dialog id="winner-dialog">
+    <p class="dialog-label">We have a winner!</p>
+    <p id="winner-name" class="winner-name"></p>
+    <div class="dialog-actions">
+      <button id="remove-winner" type="button" class="btn">Remove</button>
+      <button id="close-dialog" type="button" class="btn btn-primary" autofocus>Close</button>
+    </div>
+    <canvas id="confetti" aria-hidden="true"></canvas>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
