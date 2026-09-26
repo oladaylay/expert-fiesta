@@ -1,9 +1,20 @@
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'spin-wheel:v1';
-  const DEFAULT_ENTRIES = ['Pizza', 'Sushi', 'Tacos', 'Burgers', 'Pasta', 'Salad', 'Curry', 'Ramen'];
-  const PALETTE = ['#e6194b', '#f58231', '#ffe119', '#3cb44b', '#42d4f4', '#4363d8', '#911eb4', '#f032e6'];
+  const STORAGE_KEY = 'mcb-spin-wheel:v1';
+  // Placeholder prize list — replace with the sign-off'd prize set before the 1 Dec 2026 launch.
+  const DEFAULT_ENTRIES = [
+    'Free month upgrade',
+    '10GB data bundle',
+    'BWP 50 airtime',
+    'Decoder accessory',
+    'Try again',
+    'BWP 100 airtime',
+    'One month DStv Access',
+    '5GB data bundle',
+  ];
+  // MCB GTM deck tokens, extended with tints so 8 segments stay distinct.
+  const PALETTE = ['#0b2545', '#e9a020', '#2e6fb7', '#1e8449', '#c0392b', '#6b7280', '#1a3a63', '#c77f1a'];
   const TAU = Math.PI * 2;
   const POINTER_ANGLE = -Math.PI / 2; // pointer sits at 12 o'clock
   const MAX_HISTORY = 50;

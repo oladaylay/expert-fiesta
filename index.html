@@ -3,13 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Spin the Wheel</title>
-  <meta name="description" content="Enter some options, spin the wheel, and let chance decide.">
+  <title>MCB Spin-the-Wheel</title>
+  <meta name="description" content="MultiChoice Botswana win-back promotion — Spin the Wheel, launching 1 Dec 2026.">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="app-header">
-    <h1>Spin the Wheel</h1>
+    <div class="brand">
+      <p class="eyebrow">MULTICHOICE BOTSWANA · WIN-BACK CAMPAIGN</p>
+      <h1>Spin-the-Wheel</h1>
+      <p class="subtitle">Launches 1 Dec 2026 · Cohort 2 target: "Habit broken" — 61–90 days off-air</p>
+    </div>
     <button id="theme-toggle" class="icon-btn" type="button" aria-label="Toggle dark mode">◐</button>
   </header>
 
@@ -32,6 +36,7 @@
           <button id="sort-btn" type="button" class="btn">Sort</button>
         </div>
       </div>
+      <p class="placeholder-note">⚠ Placeholder prizes — replace with the sign-off'd prize list from the campaign team before the 1 Dec launch.</p>
       <label for="entries" class="sr-only">One entry per line</label>
       <textarea id="entries" spellcheck="false" placeholder="One entry per line"></textarea>
 
@@ -56,7 +61,7 @@
   </main>
 
   <dialog id="winner-dialog">
-    <p class="dialog-label">We have a winner!</p>
+    <p class="dialog-label">Congratulations!</p>
     <p id="winner-name" class="winner-name"></p>
     <div class="dialog-actions">
       <button id="remove-winner" type="button" class="btn">Remove</button>
@@ -64,6 +69,10 @@
     </div>
     <canvas id="confetti" aria-hidden="true"></canvas>
   </dialog>
+
+  <footer class="app-footer">
+    <p>Internal prototype for the MCB win-back Spin-the-Wheel promotion (1 Dec 2026). Prize list, odds and eligibility rules subject to campaign sign-off.</p>
+  </footer>
 
   <script src="app.js"></script>
 </body>
