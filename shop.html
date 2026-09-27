@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop | Chow Republic Ltd</title>
+<meta name="description" content="Shop value-added protein products from Chow Republic Ltd — retail packs and bulk cartons, delivered.">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header" id="top">
+  <div class="container header-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">CR</span>
+      <span class="brand-name">Chow Republic</span>
+    </a>
+    <nav class="nav" id="nav">
+      <a href="index.html#about">About</a>
+      <a href="shop.html" class="active">Shop</a>
+      <a href="index.html#why">Why Us</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+    <a class="btn btn-ghost cart-link" href="checkout.html">
+      Cart <span class="cart-badge" data-cart-count>0</span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="shop-hero">
+    <div class="container">
+      <p class="eyebrow">Shop</p>
+      <h1>Retail packs and bulk cartons — same quality, either way.</h1>
+      <p class="hero-sub">Order what you need, from a single kilo for the kitchen at home to a full carton for your restaurant or shop. No minimum order.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="tabs" id="categoryTabs"></div>
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p>&copy; <span id="year"></span> Chow Republic Ltd. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="tel:+2349079051194">+234 907 905 1194</a>
+      <a href="mailto:republicchow@gmail.com">republicchow@gmail.com</a>
+      <a href="https://www.instagram.com/chow.republic" target="_blank" rel="noopener noreferrer">Instagram</a>
+    </div>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script src="products.js"></script>
+<script src="cart.js"></script>
+<script src="common.js"></script>
+<script src="shop.js"></script>
+</body>
+</html>
