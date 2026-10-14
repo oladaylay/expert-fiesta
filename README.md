@@ -62,4 +62,4 @@ Google Maps listings come from a **Google Business Profile**, not from web hosti
 
 ## Content notes
 
-Contact details (phone, email, Instagram) are live. Product catalog (`products.js`) has illustrative Lagos-market pricing — update names, prices, units and photos with real data when ready.
+Contact details (phone, email, Instagram) are live. Product catalog (`products.js`) has real Chow Republic products and pricing from invoice history — update prices there as they change, and swap in real photos when ready.
