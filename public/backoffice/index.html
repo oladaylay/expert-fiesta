@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spin the Wheel — Back Office</title>
+<link rel="stylesheet" href="/shared/brand.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="login-screen" class="login-screen">
+    <form id="login-form" class="card login-card">
+      <h1>Back office</h1>
+      <p class="muted">Spin the Wheel — MultiChoice Botswana</p>
+      <div class="field"><label>Username</label><input id="login-username" type="text" autocomplete="username"></div>
+      <div class="field"><label>Password</label><input id="login-password" type="password" autocomplete="current-password"></div>
+      <div id="login-error" class="msg msg-error" hidden></div>
+      <button class="btn btn-primary" type="submit" style="width:100%">Log in</button>
+      <details class="demo-accounts">
+        <summary>Demo accounts (stand-in for company SSO)</summary>
+        <ul>
+          <li><code>admin / admin123</code> — Admin</li>
+          <li><code>cvm.whitelist / whitelist123</code> — Whitelist upload</li>
+          <li><code>cvm.agent / fulfil123</code> — Fulfilment</li>
+          <li><code>trade.report / report123</code> — Reporting (masked)</li>
+          <li><code>auditor / audit123</code> — Read-only / Internal Audit (masked)</li>
+        </ul>
+      </details>
+    </form>
+  </div>
+
+  <div id="shell" class="shell" hidden>
+    <aside class="side">
+      <div class="side-top">
+        <strong>Spin the Wheel</strong>
+        <div class="muted small" id="whoami"></div>
+      </div>
+      <nav id="nav"></nav>
+      <button class="btn" id="logout-btn" style="margin:12px">Log out</button>
+    </aside>
+    <main id="main" class="main"></main>
+  </div>
+
+<script src="app.js"></script>
+</body>
+</html>

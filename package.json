@@ -1,0 +1,18 @@
+{
+  "name": "mcb-spin-the-wheel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MultiChoice Botswana Spin the Wheel — customer app, back office and reporting, per the Requirements Brief (1-31 Dec 2026).",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js",
+    "simulate-odds": "node scripts/simulate-odds.js",
+    "reset-data": "node scripts/reset-data.js",
+    "test:e2e": "node scripts/e2e-test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {}
+}
