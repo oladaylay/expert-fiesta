@@ -19,6 +19,31 @@ npm start          # http://localhost:3000
   should encode).
 - Back office: `http://localhost:3000/backoffice/`
 
+## Deploying to Render (a real, shareable link)
+
+`render.yaml` in this repo is a Render Blueprint — it needs no build
+configuration beyond connecting the repo:
+
+1. On [dashboard.render.com](https://dashboard.render.com), **New → Blueprint**.
+2. Connect this GitHub repo (`oladaylay/expert-fiesta`) and pick the
+   `claude/spin-wheel-web-app-4hl02m` branch.
+3. Render reads `render.yaml` automatically (free plan, `npm install` /
+   `npm start`, health check on `/api/config`) — click **Apply**.
+4. You get a public URL like `https://mcb-spin-the-wheel.onrender.com`.
+
+No Blueprint support, or you'd rather click through manually: **New → Web
+Service**, same repo/branch, Build Command `npm install`, Start Command
+`npm start`, plan Free.
+
+**Persistence caveat on the free plan:** Render's free tier has no
+persistent disk and spins the service down after 15 minutes idle. `data/db.json`
+(the demo database) is rebuilt from the seed data in `server/db.js` on every
+restart — fine for a demo/UAT link, but don't expect spins or whitelist
+uploads to survive a redeploy or a long idle period. For something that needs
+to persist, upgrade to a paid Render instance with a persistent disk mounted
+at `data/`, or swap `server/db.js` for a managed database (see "What's real
+vs mocked" below).
+
 Demo back-office accounts (standing in for the company SSO the brief calls for):
 
 | Username | Password | Role |

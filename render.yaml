@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: mcb-spin-the-wheel
+    runtime: node
+    plan: free
+    branch: claude/spin-wheel-web-app-4hl02m
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/config
+    envVars:
+      - key: NODE_VERSION
+        value: 22
