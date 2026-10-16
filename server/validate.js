@@ -1,9 +1,15 @@
 'use strict';
 const crypto = require('crypto');
 
-// MultiChoice smartcards: numeric, 10-12 digits (demo-reasonable range).
+// MultiChoice smartcards: alphanumeric, 10-12 characters (demo-reasonable range).
 function isValidSmartcard(s) {
-  return typeof s === 'string' && /^[0-9]{10,12}$/.test(s.trim());
+  return typeof s === 'string' && /^[A-Za-z0-9]{10,12}$/.test(s.trim());
+}
+
+// Case-insensitive on the card itself: "ab12345678" and "AB12345678" are the
+// same smartcard, so normalise before storing or comparing.
+function normalizeSmartcard(s) {
+  return String(s).trim().toUpperCase();
 }
 
 // Botswana mobile: 8 digits starting 7, optionally prefixed +267/267.
@@ -45,6 +51,7 @@ function maskMobile(s) {
 
 module.exports = {
   isValidSmartcard,
+  normalizeSmartcard,
   isValidMobile,
   normaliseMobile,
   sign,

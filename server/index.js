@@ -13,6 +13,7 @@ const reports = require('./reports');
 const { ODDS_TABLE, drawTier } = require('./rng');
 const {
   isValidSmartcard,
+  normalizeSmartcard,
   isValidMobile,
   normaliseMobile,
   sign,
@@ -166,13 +167,14 @@ route('POST', '/api/check', async (req, res) => {
   }
 
   const { smartcard = '', mobile = '', outletId = '', sig = '', consentAge, consentTerms } = body;
+  const card = normalizeSmartcard(smartcard);
   const msgs = state.config.messages;
 
   const logCheck = (result, reason) => {
     state.checkLog.push({
       id: db.newId('chk'),
       ts: db.nowIso(),
-      smartcard,
+      smartcard: card,
       mobile,
       outletId: outletId || null,
       result,
@@ -203,7 +205,7 @@ route('POST', '/api/check', async (req, res) => {
     return sendJson(res, 200, { ok: false, reason: 'needs_consent', message: msgs.needConsent, nextStep: 'Tick both boxes to continue.' });
   }
 
-  if (!isValidSmartcard(smartcard)) {
+  if (!isValidSmartcard(card)) {
     logCheck('fail', 'invalid_smartcard');
     return sendJson(res, 200, {
       ok: false,
@@ -217,8 +219,6 @@ route('POST', '/api/check', async (req, res) => {
     logCheck('fail', 'invalid_mobile');
     return sendJson(res, 200, { ok: false, reason: 'invalid_mobile', message: msgs.invalidMobile, nextStep: 'Re-enter your mobile number.' });
   }
-
-  const card = smartcard.trim();
 
   // One spin per smartcard — permanent, even if it reappears in a later upload.
   if (state.usedSmartcards[card]) {
@@ -387,7 +387,7 @@ route('POST', '/api/admin/whitelist/upload', async (req, res) => {
   if (!body || !Array.isArray(body.rows)) return sendJson(res, 400, { ok: false, message: 'Expected { mode, rows: [smartcard,...] }.' });
 
   const mode = body.mode === 'replace' ? 'replace' : 'add';
-  const valid = body.rows.map((s) => String(s).trim()).filter((s) => isValidSmartcard(s));
+  const valid = body.rows.map((s) => String(s).trim()).filter(isValidSmartcard).map(normalizeSmartcard);
   const uploadId = db.newId('upl');
   const ts = db.nowIso();
 
@@ -424,9 +424,10 @@ route('DELETE', '/api/admin/whitelist/:card', async (req, res, params) => {
   const session = requireSession(req);
   if (!requireRole(session, ['whitelist_upload', 'admin'])) return sendJson(res, 403, { ok: false });
   const state = db.get();
-  const existed = Boolean(state.whitelist[params.card]);
-  delete state.whitelist[params.card];
-  logAdminAction(state, session, 'whitelist_remove', { smartcard: params.card });
+  const card = normalizeSmartcard(params.card);
+  const existed = Boolean(state.whitelist[card]);
+  delete state.whitelist[card];
+  logAdminAction(state, session, 'whitelist_remove', { smartcard: card });
   db.save();
   sendJson(res, 200, { ok: true, removed: existed });
 });
@@ -546,8 +547,9 @@ route('GET', '/api/admin/customer-care', async (req, res, params, query) => {
   const unmasked = auth.canSeeUnmasked(session.role);
   const q = (query.q || '').trim();
   if (!q) return sendJson(res, 400, { ok: false, message: 'Provide a smartcard or mobile number.' });
-  const prizes = Object.values(state.prizeQueue).filter((p) => p.smartcard === q || p.mobile === q || normaliseMobile(q) === p.mobile);
-  const checks = state.checkLog.filter((c) => c.smartcard === q || c.mobile === q);
+  const qCard = normalizeSmartcard(q);
+  const prizes = Object.values(state.prizeQueue).filter((p) => p.smartcard === qCard || p.mobile === q || normaliseMobile(q) === p.mobile);
+  const checks = state.checkLog.filter((c) => c.smartcard === qCard || c.mobile === q);
   sendJson(res, 200, {
     ok: true,
     prizes: prizes.map((p) => serialisePrize(state, p, unmasked)),

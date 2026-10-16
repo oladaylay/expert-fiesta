@@ -144,6 +144,36 @@ async function main() {
   }).then((r) => r.json());
   assert(spin2.ok, 'Spin succeeds for the newly whitelisted card');
 
+  // --- alphanumeric smartcards, case-insensitive ---
+  console.log('\nAlphanumeric smartcards: letters allowed, case-insensitive match');
+  const alnuCard = 'ab12cd34ef'; // lowercase on upload
+  const alnuMobile = '71234504';
+  await fetch(`${BASE}/api/admin/whitelist/upload`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...whitelistJar.headers() },
+    body: JSON.stringify({ mode: 'add', rows: [alnuCard] }),
+  });
+  const alnuCheck = await fetch(`${BASE}/api/check`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    // entered in a different case than uploaded
+    body: JSON.stringify({ smartcard: 'AB12CD34EF', mobile: alnuMobile, outletId, sig, consentAge: true, consentTerms: true }),
+  }).then((r) => r.json());
+  assert(alnuCheck.ok, 'A letters-and-digits smartcard is accepted as valid');
+  assert(alnuCheck.spinToken, 'Case-insensitive match against the whitelist entry succeeds');
+  const alnuSpin = await fetch(`${BASE}/api/spin`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ spinToken: alnuCheck.spinToken }),
+  }).then((r) => r.json());
+  assert(alnuSpin.ok, 'Spin succeeds for the alphanumeric smartcard');
+  const alnuTooShort = await fetch(`${BASE}/api/check`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ smartcard: 'AB1', mobile: alnuMobile, outletId, sig, consentAge: true, consentTerms: true }),
+  }).then((r) => r.json());
+  assert(!alnuTooShort.ok && alnuTooShort.reason === 'invalid_smartcard', 'A too-short smartcard is still rejected as invalid');
+
   // --- criterion 4: a dropped connection after the tap still records the
   //     prize and sends the SMS — simulated as a retried /api/spin call
   //     with the same (now-consumed) token, as a client retry would send ---

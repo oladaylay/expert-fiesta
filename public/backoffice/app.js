@@ -159,7 +159,7 @@
           <select id="wl-mode"><option value="add">Add to existing list</option><option value="replace">Replace entire list</option></select>
         </div>
       </div>
-      <textarea class="bulk" id="wl-rows" placeholder="1234567890&#10;1234567891&#10;..."></textarea>
+      <textarea class="bulk" id="wl-rows" placeholder="AB1234567C&#10;1234567890&#10;..."></textarea>
       <div style="margin:10px 0"><button class="btn btn-primary" id="wl-upload">Upload</button></div>
       <div id="wl-msg"></div>
       <h3>Upload history</h3>

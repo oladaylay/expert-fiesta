@@ -110,7 +110,7 @@
           <h1>${t('campaignTitle')}</h1>
           <div class="field">
             <label for="smartcard">${t('smartcardLabel')}</label>
-            <input type="text" id="smartcard" inputmode="numeric" autocomplete="off" placeholder="e.g. 1234567890" value="${data.smartcard || ''}">
+            <input type="text" id="smartcard" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="e.g. AB1234567C" value="${data.smartcard || ''}">
             <label class="field-file">
               <input type="file" id="card-photo" accept="image/*" capture="environment" hidden>
               📷 ${t('smartcardScan')}
