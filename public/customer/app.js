@@ -210,24 +210,77 @@
       const canvas = node.querySelector('#wheel');
       drawWheel(canvas, 0);
 
-      node.querySelector('#spin-btn').addEventListener('click', async (e) => {
-        const btn = e.currentTarget;
-        btn.disabled = true;
-        btn.textContent = '…';
-        const resp = await api('POST', '/api/spin', { spinToken });
-        if (!resp.ok) {
+      // Click to start, click again to stop — the prize is already decided
+      // server-side the moment the spin starts (same as before); clicking
+      // to stop only ends the animation, it never changes the outcome.
+      let phase = 'idle'; // idle -> starting -> spinning -> stopping -> done
+      let rafId = null;
+      let rotation = 0;
+      let decided = null;
+      const btn = node.querySelector('#spin-btn');
+
+      btn.addEventListener('click', async () => {
+        if (phase === 'idle') {
+          phase = 'starting';
+          btn.disabled = true;
+          const resp = await api('POST', '/api/spin', { spinToken });
           btn.disabled = false;
-          btn.textContent = t('spinBtn');
-          node.insertAdjacentHTML('beforeend', `<div class="msg msg-error">${resp.message}</div>`);
-          return;
+          if (!resp.ok) {
+            phase = 'idle';
+            node.insertAdjacentHTML('beforeend', `<div class="msg msg-error">${resp.message}</div>`);
+            return;
+          }
+          decided = resp;
+          phase = 'spinning';
+          spinContinuously();
+        } else if (phase === 'spinning') {
+          phase = 'stopping';
+          stopOnWinner();
         }
-        animateWheel(canvas, resp, () => {
-          resultRef = resp.ref;
-          history.replaceState(null, '', `?ref=${encodeURIComponent(resp.ref)}`);
-          sessionStorage.removeItem('mcb_spin_token');
-          showResult();
-        });
+        // clicks during 'starting' or 'stopping' are ignored
       });
+
+      function spinContinuously() {
+        const SPEED = TAU * 1.3; // radians per second
+        const base = rotation;
+        const start = performance.now();
+        function frame(now) {
+          rotation = base + SPEED * ((now - start) / 1000);
+          drawWheel(canvas, rotation);
+          if (phase === 'spinning') rafId = requestAnimationFrame(frame);
+        }
+        rafId = requestAnimationFrame(frame);
+      }
+
+      function stopOnWinner() {
+        cancelAnimationFrame(rafId);
+        const segs = wheelGeometry();
+        const winner = segs.find((s) => s.tier === decided.tier) || segs[0];
+        const offset = winner.start + winner.size / 2;
+        const base = POINTER_ANGLE - offset;
+        // smallest forward rotation that lands exactly on the winning
+        // segment, plus one extra turn so the stop still reads as a
+        // deceleration rather than a hard cut.
+        let target = base + TAU * Math.ceil((rotation - base) / TAU) + TAU;
+        const from = rotation;
+        const duration = 1600 + Math.random() * 500;
+        const start = performance.now();
+        function frame(now) {
+          const p = Math.min(1, (now - start) / duration);
+          rotation = from + (target - from) * easeOut(p);
+          drawWheel(canvas, rotation);
+          if (p < 1) {
+            rafId = requestAnimationFrame(frame);
+          } else {
+            phase = 'done';
+            resultRef = decided.ref;
+            history.replaceState(null, '', `?ref=${encodeURIComponent(decided.ref)}`);
+            sessionStorage.removeItem('mcb_spin_token');
+            showResult();
+          }
+        }
+        rafId = requestAnimationFrame(frame);
+      }
 
       render(node);
     },
@@ -276,15 +329,15 @@
   // wheel drawing
   // ---------------------------------------------------------------------
 
+  // Every quadrant is drawn the same size — the real odds stay exactly as
+  // configured on the server (see server/rng.js) and are never touched by
+  // this. The brief allows this: "Segment sizes follow the published odds,
+  // OR the odds table sits beside the wheel" — the table below the wheel
+  // carries the real odds, so the picture never has to.
   function wheelGeometry() {
-    const total = config.prizes.reduce((s, p) => s + p.oddsPercent, 0);
-    let acc = 0;
-    return config.prizes.map((p, i) => {
-      const size = (p.oddsPercent / total) * TAU;
-      const start = acc;
-      acc += size;
-      return { ...p, start, size, color: SEGMENT_COLORS[i % SEGMENT_COLORS.length] };
-    });
+    const n = config.prizes.length;
+    const size = TAU / n;
+    return config.prizes.map((p, i) => ({ ...p, start: i * size, size, color: SEGMENT_COLORS[i % SEGMENT_COLORS.length] }));
   }
 
   function drawWheel(canvas, rotation) {
@@ -334,25 +387,6 @@
   }
 
   const easeOut = (x) => 1 - Math.pow(1 - x, 4);
-
-  function animateWheel(canvas, spinResult, done) {
-    const segs = wheelGeometry();
-    const winner = segs.find((s) => s.tier === spinResult.tier) || segs[0];
-    const offset = winner.start + winner.size / 2;
-    const base = POINTER_ANGLE - offset;
-    const turns = 4;
-    const target = base + TAU * turns;
-    const duration = 3800 + Math.random() * 1000; // brief: animation runs 3-5s
-    const start = performance.now();
-
-    function frame(now) {
-      const p = Math.min(1, (now - start) / duration);
-      drawWheel(canvas, target * easeOut(p));
-      if (p < 1) requestAnimationFrame(frame);
-      else done();
-    }
-    requestAnimationFrame(frame);
-  }
 
   // ---------------------------------------------------------------------
   // boot
