@@ -30,7 +30,15 @@
 
 .hero h1 { font-size: 1.7rem; color: var(--navy); }
 @media (prefers-color-scheme: dark) { .hero h1 { color: #f4f6f8; } }
-.hero .tag { color: var(--muted); margin-bottom: 18px; }
+.hero .tag {
+  font-family: Cambria, Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--navy);
+  margin: 10px 0 20px;
+}
+@media (prefers-color-scheme: dark) { .hero .tag { color: #f4f6f8; } }
 
 .prize-table { width: 100%; border-collapse: collapse; margin: 14px 0 20px; font-size: 0.92rem; }
 .prize-table th, .prize-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--rule); }

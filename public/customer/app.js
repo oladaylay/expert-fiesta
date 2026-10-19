@@ -76,27 +76,11 @@
     },
 
     landing() {
-      const prizeRows = config.prizes
-        .map(
-          (p) => `
-        <tr class="${p.tier === 'grand_2000' ? 'grand' : ''}">
-          <td>${p.label}</td>
-          <td>BWP ${p.value}</td>
-          <td class="odds">${p.oddsPercent}%</td>
-        </tr>`
-        )
-        .join('');
-
       const node = h(`
         <div class="hero">
           <h1>${t('campaignTitle')}</h1>
           <p class="tag">${t('campaignTag')}</p>
           <p class="msg msg-info">${outlet.name} · ${outlet.town}</p>
-          <h3>${t('oddsHeading')}</h3>
-          <table class="prize-table">
-            <thead><tr><th>Prize</th><th>Value</th><th>Odds</th></tr></thead>
-            <tbody>${prizeRows}</tbody>
-          </table>
           <button class="btn btn-primary" id="start-btn" style="width:100%">${t('startBtn')}</button>
         </div>
       `);

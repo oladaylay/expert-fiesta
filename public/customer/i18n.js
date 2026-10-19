@@ -3,8 +3,7 @@
 window.STRINGS = {
   en: {
     campaignTitle: 'Spin the Wheel',
-    campaignTag: 'Reconnect. Scan. Spin. Win.',
-    oddsHeading: 'Prizes and odds',
+    campaignTag: 'Spin and stand a chance to Win up to P2000 Christmas Shopping Voucher',
     startBtn: 'Start',
     smartcardLabel: 'Smartcard number',
     smartcardScan: 'Take a photo of your card',
@@ -26,8 +25,9 @@ window.STRINGS = {
   },
   tn: {
     campaignTitle: 'Dikologa Wili',
-    campaignTag: 'Kgokagana. Sikena. Dikologa. Fenya.',
-    oddsHeading: 'Dimpho le ditshono',
+    // Demo-quality translation of the English tagline — have a fluent
+    // Setswana speaker review before this goes to real customers.
+    campaignTag: 'Dikologa mme o kgone go fenya Boroko jwa Keresemose jwa go fitlha go P2000.',
     startBtn: 'Simolola',
     smartcardLabel: 'Nomoro ya smartcard',
     smartcardScan: 'Tsaya setshwantsho sa karata ya gago',
