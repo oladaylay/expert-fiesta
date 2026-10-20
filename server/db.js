@@ -49,6 +49,12 @@ function seed() {
       // exercised before real launch. Null = use the real system clock.
       // This is a UAT control only — it never ships switched on.
       testClockOverride: start,
+      // Skips the "scan the outlet QR code" gate: the customer app lands
+      // straight on the smartcard-check form against a default test
+      // outlet, instead of requiring an ?o=&s= link. Testing-only, same
+      // spirit as testClockOverride — must be off before real launch, since
+      // the brief requires entry via a scanned outlet QR code.
+      testBypassQr: true,
       messages: {
         notOnWhitelist: "We can't find this smartcard in the promotion yet.",
         alreadySpun: 'This smartcard has already had its spin.',

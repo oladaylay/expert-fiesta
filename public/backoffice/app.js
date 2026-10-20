@@ -494,6 +494,15 @@
         <button class="btn btn-sm" id="s-save-clock">Apply</button>
         <button class="btn btn-sm" id="s-clear-clock">Use real clock</button>
       </div>
+
+      <h3>Testing: skip QR scan</h3>
+      <p class="sub">UAT only. When on, opening the bare customer link with no <code>?o=&amp;s=</code>
+        lands straight on the smartcard-check form against the first outlet configured in
+        <strong>Outlets &amp; QR</strong>, instead of showing "scan the outlet QR code". Turn this
+        off before real launch — the brief requires entry via a scanned, signed outlet QR code.</p>
+      <div class="toolbar">
+        <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="s-qr-bypass" ${config.testBypassQr ? 'checked' : ''}> Skip QR scan for testing</label>
+      </div>
       <div id="settings-msg"></div>
     `;
 
@@ -527,6 +536,10 @@
       await api('POST', '/api/admin/config', { testClockOverride: null });
       body.querySelector('#s-clock').value = '';
       body.querySelector('#settings-msg').innerHTML = `<div class="msg msg-success">Using the real system clock.</div>`;
+    });
+    body.querySelector('#s-qr-bypass').addEventListener('change', async (e) => {
+      await api('POST', '/api/admin/config', { testBypassQr: e.target.checked });
+      body.querySelector('#settings-msg').innerHTML = `<div class="msg msg-success">${e.target.checked ? 'QR scan bypass is on — customer link skips straight to the smartcard form.' : 'QR scan bypass is off — customer link requires a scanned outlet QR code again.'}</div>`;
     });
   }
 

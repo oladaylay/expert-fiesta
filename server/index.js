@@ -132,7 +132,8 @@ function requireRole(session, roles) {
 route('GET', '/api/config', async (req, res) => {
   const state = db.get();
   const status = clock.campaignStatus();
-  sendJson(res, 200, {
+  const qrBypassActive = Boolean(state.config.testBypassQr) && state.outlets.length > 0;
+  const body = {
     campaign: {
       start: state.config.campaignStart,
       end: state.config.campaignEnd,
@@ -140,11 +141,19 @@ route('GET', '/api/config', async (req, res) => {
       phase: status.phase,
       now: status.now.toISOString(),
       testClockActive: Boolean(state.config.testClockOverride),
+      qrBypassActive,
     },
     prizes: ODDS_TABLE.map((t) => ({ tier: t.tier, label: t.label, value: t.value, oddsPercent: Math.round(t.odds * 1000) / 10 })),
     termsUrl: state.config.termsUrl,
     messages: state.config.messages,
-  });
+  };
+  if (qrBypassActive) {
+    // A valid signed outlet for testing only, so the customer app can skip
+    // straight to the smartcard-check form without a scanned QR link.
+    const o = state.outlets[0];
+    body.testOutlet = { id: o.id, name: o.name, town: o.town, sig: sign(state.config.qrSecret, o.id) };
+  }
+  sendJson(res, 200, body);
 });
 
 route('GET', '/api/outlet', async (req, res, params, query) => {
@@ -673,6 +682,7 @@ route('POST', '/api/admin/config', async (req, res) => {
   if ('campaignEnd' in body) state.config.campaignEnd = body.campaignEnd;
   if (body.messages && typeof body.messages === 'object') Object.assign(state.config.messages, body.messages);
   if ('testClockOverride' in body) state.config.testClockOverride = body.testClockOverride || null;
+  if ('testBypassQr' in body) state.config.testBypassQr = Boolean(body.testBypassQr);
   logAdminAction(state, session, 'config_update', body);
   db.save();
   sendJson(res, 200, { ok: true, config: state.config });

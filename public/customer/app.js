@@ -379,9 +379,19 @@
   async function boot() {
     const cfgResp = await api('GET', '/api/config');
     config = cfgResp;
+
+    const bannerParts = [];
     if (config.campaign && config.campaign.testClockActive) {
+      bannerParts.push(
+        `simulated time: ${new Date(config.campaign.now).toLocaleString('en-GB')}`
+      );
+    }
+    if (config.campaign && config.campaign.qrBypassActive) {
+      bannerParts.push('QR scan skipped — landing on the smartcard check');
+    }
+    if (bannerParts.length) {
       bannerEl.hidden = false;
-      bannerEl.textContent = `TEST MODE — simulated time: ${new Date(config.campaign.now).toLocaleString('en-GB')} (set in the back office; off by default in production)`;
+      bannerEl.textContent = `TEST MODE — ${bannerParts.join(' · ')} (set in the back office; off by default in production)`;
     }
 
     if (resultRef) {
@@ -390,6 +400,17 @@
     }
 
     if (!outletId || !outletSig) {
+      // No scanned QR link. For testing, the back office can turn on a
+      // bypass that lands straight on the smartcard-check form against a
+      // default outlet, instead of requiring the real ?o=&s= link. Off by
+      // default before real launch — see Settings in the back office.
+      if (config.testOutlet) {
+        outlet = config.testOutlet;
+        outletId = config.testOutlet.id;
+        outletSig = config.testOutlet.sig;
+        go(spinToken ? 'unlocked' : 'form');
+        return;
+      }
       go('needQr');
       return;
     }

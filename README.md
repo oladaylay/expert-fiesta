@@ -69,11 +69,20 @@ with `npm run reset-data` (resets whichever backend is active).
 
 ### Testing before the real 1 Dec 2026 launch
 
-The campaign only runs 1–31 December. So you can exercise it today, **Settings
-→ Testing: simulated clock** lets you set a fake "now" for the whole app — set
-it to any time inside the campaign window and the customer app and back office
-both honour it. It ships set to the campaign start by default in this build;
-clear it to use the real clock. This is a UAT control only.
+Two UAT-only controls under back office **Settings**, both on by default in
+this build and both meant to be switched off before real launch:
+
+- **Simulated clock.** The campaign only runs 1–31 December. Set a fake
+  "now" for the whole app so you can exercise the campaign window today —
+  the customer app and back office both honour it. Clear it to use the real
+  clock.
+- **Skip QR scan.** The brief's real customer entry point is a signed outlet
+  QR link (`/customer/?o=<id>&s=<signature>`); the back office's **Outlets
+  & QR** tab lists the real signed links. With the bypass on, opening the
+  bare `/customer/` link (no `?o=&s=`) skips the "scan the outlet QR code"
+  gate and lands straight on the smartcard-check form against the first
+  configured outlet — useful for quick testing without generating a link
+  first. Turn it off to test the real QR-link flow, or before real launch.
 
 ## What's real vs mocked, and why
 
