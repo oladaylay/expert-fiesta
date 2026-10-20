@@ -4,8 +4,8 @@ Built against `Spin the Wheel App — Requirements Brief` (Oct 16, 2026, @ola.li
 Runs 1–31 December 2026 as the outlet mechanic in the December reactivation drive.
 
 This is a working engineering build of the full brief: the customer web app,
-the back-office console, and reporting — not a mockup. It has no external
-dependencies, so it runs anywhere Node runs.
+the back-office console, and reporting — not a mockup. Its only runtime
+dependency is `pg` (Postgres client), used only when `DATABASE_URL` is set.
 
 ## Run it
 
@@ -21,28 +21,37 @@ npm start          # http://localhost:3000
 
 ## Deploying to Render (a real, shareable link)
 
-`render.yaml` in this repo is a Render Blueprint — it needs no build
-configuration beyond connecting the repo:
+`render.yaml` in this repo is a Render Blueprint, including a free Postgres
+database for persistence — it needs no build configuration beyond
+connecting the repo:
 
 1. On [dashboard.render.com](https://dashboard.render.com), **New → Blueprint**.
 2. Connect this GitHub repo (`oladaylay/expert-fiesta`) and pick the
    `claude/spin-wheel-web-app-4hl02m` branch.
-3. Render reads `render.yaml` automatically (free plan, `npm install` /
-   `npm start`, health check on `/api/config`) — click **Apply**.
+3. Render reads `render.yaml` automatically (free web service, `npm install` /
+   `npm start`, health check on `/api/config`, plus a free `mcb-spin-wheel-db`
+   Postgres database wired to the service via `DATABASE_URL`) — click **Apply**.
 4. You get a public URL like `https://mcb-spin-the-wheel.onrender.com`.
 
-No Blueprint support, or you'd rather click through manually: **New → Web
-Service**, same repo/branch, Build Command `npm install`, Start Command
-`npm start`, plan Free.
+If the web service already exists from before this database was added,
+Render's dashboard → your Blueprint → **Manual Sync** picks up the new
+`databases:` entry and provisions it without recreating the service.
 
-**Persistence caveat on the free plan:** Render's free tier has no
-persistent disk and spins the service down after 15 minutes idle. `data/db.json`
-(the demo database) is rebuilt from the seed data in `server/db.js` on every
-restart — fine for a demo/UAT link, but don't expect spins or whitelist
-uploads to survive a redeploy or a long idle period. For something that needs
-to persist, upgrade to a paid Render instance with a persistent disk mounted
-at `data/`, or swap `server/db.js` for a managed database (see "What's real
-vs mocked" below).
+No Blueprint support, or you'd rather click through manually: create a free
+Postgres database first, then **New → Web Service** (same repo/branch, Build
+Command `npm install`, Start Command `npm start`, plan Free), and add
+`DATABASE_URL` as an environment variable pointing at that database's
+connection string.
+
+**Persistence:** with `DATABASE_URL` set, every spin, whitelist upload and
+back-office action is written to Postgres and survives restarts, idle
+spin-down and redeploys — `npm start` with no `DATABASE_URL` (e.g. running
+locally) falls back to the `data/db.json` file instead, which does not
+persist across a Render restart. One remaining caveat: **Render's free
+Postgres plan is deleted after 30 days.** Fine for an extended UAT/demo
+window, not for anything meant to run indefinitely — for that, upgrade to a
+paid Postgres plan (same `DATABASE_URL` wiring, no code change) before the
+30 days are up.
 
 Demo back-office accounts (standing in for the company SSO the brief calls for):
 
@@ -54,8 +63,9 @@ Demo back-office accounts (standing in for the company SSO the brief calls for):
 | `trade.report` | `report123` | Reporting (masked smartcard/mobile) |
 | `auditor` | `audit123` | Read-only / Internal Audit (masked) |
 
-Data lives in `data/db.json` (gitignored), created on first run. Reset it with
-`npm run reset-data`.
+Data lives in Postgres when `DATABASE_URL` is set (Render), otherwise in
+`data/db.json` (gitignored, local dev only), created on first run. Reset it
+with `npm run reset-data` (resets whichever backend is active).
 
 ### Testing before the real 1 Dec 2026 launch
 
@@ -96,10 +106,15 @@ Built to match the brief's explicit scope and open items:
 - **Data masking**: reporting and read-only (non-CVM) roles see masked
   smartcard/mobile everywhere; admin, whitelist-upload and fulfilment
   (CVM) roles see the real values, per "Data protection".
-- **Storage is a JSON file** (`server/db.js`), not a managed database — it's
-  the one piece that would change for a real multi-instance production
-  deployment; every other module only calls `db.get()`/`db.save()`, so that
-  swap is isolated.
+- **Storage is Postgres when deployed** (`server/db.js`, a single JSONB row
+  holding the whole app state — not a relational schema, since the goal was
+  persistence with minimal churn to the rest of the code; every route still
+  just calls `db.get()`/`db.save()` on an in-memory object, same as before).
+  Local dev and tests fall back to a `data/db.json` file when `DATABASE_URL`
+  isn't set, so nothing extra is needed to run this locally. A real
+  multi-instance production deployment would want a proper relational schema
+  instead of one JSONB blob — this is a deliberate stepping-stone, not the
+  final shape.
 - **Prize details** (voucher retailer, airtime provider, voucher validity) are
   listed as an open item in the brief and aren't filled in here — the result
   screen, SMS text and terms page use generic wording pending that decision.

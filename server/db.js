@@ -1,7 +1,13 @@
 'use strict';
-// Flat JSON-file "database" for the demo/UAT build. A real deployment
-// swaps this module for a managed DB; every other module only calls
-// get()/save(), so that swap doesn't touch routing or business logic.
+// Storage for the app's whole in-memory state. Every other module only
+// calls get()/save() (and awaits init() once at boot) — the backend behind
+// them can change without touching routing or business logic.
+//
+// Two backends:
+//  - DATABASE_URL set (Render, in production): a single JSONB row in
+//    Postgres. Survives restarts, idle spin-down and redeploys.
+//  - DATABASE_URL unset (local dev, tests): a JSON file under data/, same
+//    as before. Nothing to install or configure locally.
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -10,6 +16,7 @@ const DATA_DIR = path.join(__dirname, '..', 'data');
 // Overridable so tests/UAT runs can point at an isolated file instead of
 // the real demo database.
 const DB_FILE = process.env.SPIN_DB_FILE || path.join(DATA_DIR, 'db.json');
+const DATABASE_URL = process.env.DATABASE_URL || null;
 
 function nowIso() {
   return new Date().toISOString();
@@ -88,31 +95,98 @@ function seed() {
 }
 
 let state = null;
+let ready = null; // promise that resolves once state is loaded
 
-function load() {
-  if (state) return state;
+// ---------------------------------------------------------------------
+// Postgres backend
+// ---------------------------------------------------------------------
+
+let pool = null;
+function getPool() {
+  if (!pool) {
+    const { Pool } = require('pg');
+    const isLocal = /localhost|127\.0\.0\.1/.test(DATABASE_URL);
+    pool = new Pool({ connectionString: DATABASE_URL, ssl: isLocal ? false : { rejectUnauthorized: false } });
+  }
+  return pool;
+}
+
+async function pgEnsureTable() {
+  await getPool().query(
+    'CREATE TABLE IF NOT EXISTS mcb_spin_state (id INT PRIMARY KEY, data JSONB NOT NULL, updated_at TIMESTAMPTZ NOT NULL DEFAULT now())'
+  );
+}
+
+async function pgLoad() {
+  await pgEnsureTable();
+  const { rows } = await getPool().query('SELECT data FROM mcb_spin_state WHERE id = 1');
+  if (rows.length) return rows[0].data;
+  const fresh = seed();
+  await getPool().query('INSERT INTO mcb_spin_state (id, data) VALUES (1, $1)', [JSON.stringify(fresh)]);
+  return fresh;
+}
+
+function pgSave() {
+  // Fire-and-forget: callers already call save() synchronously without
+  // awaiting it, same contract as the file backend's writeFileSync.
+  getPool()
+    .query('UPDATE mcb_spin_state SET data = $1, updated_at = now() WHERE id = 1', [JSON.stringify(state)])
+    .catch((err) => console.error('db save failed:', err.message));
+}
+
+// ---------------------------------------------------------------------
+// File backend
+// ---------------------------------------------------------------------
+
+function fileLoad() {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  if (fs.existsSync(DB_FILE)) {
-    state = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
-  } else {
-    state = seed();
-    save();
+  if (fs.existsSync(DB_FILE)) return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+  const fresh = seed();
+  fs.writeFileSync(DB_FILE, JSON.stringify(fresh, null, 2));
+  return fresh;
+}
+
+function fileSave() {
+  fs.writeFileSync(DB_FILE, JSON.stringify(state, null, 2));
+}
+
+// ---------------------------------------------------------------------
+// public API
+// ---------------------------------------------------------------------
+
+// Call once at startup and await it before accepting requests. Safe to
+// call more than once; later calls return the same promise.
+function init() {
+  if (!ready) {
+    ready = (DATABASE_URL ? pgLoad() : Promise.resolve(fileLoad())).then((loaded) => {
+      state = loaded;
+      return state;
+    });
+  }
+  return ready;
+}
+
+function get() {
+  if (!state) {
+    throw new Error('db.get() called before db.init() resolved — await db.init() at startup first');
   }
   return state;
 }
 
 function save() {
-  fs.writeFileSync(DB_FILE, JSON.stringify(state, null, 2));
+  if (DATABASE_URL) pgSave();
+  else fileSave();
 }
 
-function get() {
-  return load();
-}
-
-function reset() {
+async function reset() {
   state = seed();
-  save();
+  if (DATABASE_URL) {
+    await pgEnsureTable();
+    await getPool().query('UPDATE mcb_spin_state SET data = $1, updated_at = now() WHERE id = 1', [JSON.stringify(state)]);
+  } else {
+    fileSave();
+  }
   return state;
 }
 
-module.exports = { get, save, reset, seed, nowIso, newId, newRef, DB_FILE };
+module.exports = { init, get, save, reset, seed, nowIso, newId, newRef, DB_FILE, usingPostgres: Boolean(DATABASE_URL) };

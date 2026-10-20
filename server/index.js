@@ -738,11 +738,18 @@ const server = http.createServer(async (req, res) => {
   sendJson(res, 404, { ok: false, message: 'Not found.' });
 });
 
-db.get(); // ensure data file exists / seeded before first request
-server.listen(PORT, () => {
-  console.log(`MCB Spin the Wheel listening on http://localhost:${PORT}`);
-  console.log(`Customer app:  http://localhost:${PORT}/customer/`);
-  console.log(`Back office:   http://localhost:${PORT}/backoffice/`);
-});
+db.init()
+  .then(() => {
+    server.listen(PORT, () => {
+      console.log(`MCB Spin the Wheel listening on http://localhost:${PORT}`);
+      console.log(`Customer app:  http://localhost:${PORT}/customer/`);
+      console.log(`Back office:   http://localhost:${PORT}/backoffice/`);
+      console.log(`Storage:       ${db.usingPostgres ? 'Postgres (persistent)' : `file (${db.DB_FILE})`}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Failed to initialise storage:', err);
+    process.exit(1);
+  });
 
 module.exports = server;
