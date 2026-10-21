@@ -50,23 +50,12 @@ img { max-width: 100%; display: block; }
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--navy);
   margin-right: auto;
 }
-.brand-mark {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: var(--green);
-  color: #fff;
-  font-size: 0.85rem;
-  font-weight: 800;
+.brand-logo {
+  height: 52px;
+  width: auto;
+  display: block;
 }
 .nav {
   display: flex;
@@ -515,7 +504,7 @@ h1 {
   .card-grid { grid-template-columns: 1fr; }
   .feature-grid { grid-template-columns: 1fr; }
   .product-grid { grid-template-columns: 1fr; }
-  .brand-name { font-size: 0.95rem; white-space: nowrap; }
+  .brand-logo { height: 42px; }
   .hero { padding: 72px 0 60px; }
   .section { padding: 64px 0; }
   .cart-table thead { display: none; }
