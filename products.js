@@ -1,6 +1,7 @@
 // === Product catalog ===
-// Real Chow Republic products and pricing (from invoice history). `image` is an emoji
-// placeholder — swap for a real photo path (e.g. "images/chicken-laps.jpg") any time.
+// Real Chow Republic products and pricing (from invoice history, updated from the latest
+// catalogue). `image` is an emoji fallback; `photo`, where present, is a real product photo
+// and takes priority over the emoji in the shop and cart.
 const PRODUCTS = [
   {
     id: "chicken-laps",
@@ -9,6 +10,8 @@ const PRODUCTS = [
     price: 5800,
     unit: "per kg",
     image: "🐔",
+    photo: "images/products/chicken-laps.jpg",
+    photoPosition: "center 78%",
     description: "Fresh chicken laps (thigh and drumstick), sold by the kilo."
   },
   {
@@ -18,7 +21,8 @@ const PRODUCTS = [
     price: 5800,
     unit: "per kg",
     image: "🐔",
-    description: "Fresh chicken leg quarters, sold by the kilo."
+    photo: "images/products/chicken-quarters.jpg",
+    description: "Fresh chicken quarters (chest, wings, thighs & drumstick), sold by the kilo."
   },
   {
     id: "boneless-chicken-breast",
@@ -27,6 +31,7 @@ const PRODUCTS = [
     price: 7000,
     unit: "per kg",
     image: "🐔",
+    photo: "images/products/boneless-chicken-breast.jpg",
     description: "Fresh boneless chicken breast, sold by the kilo."
   },
   {
@@ -36,6 +41,7 @@ const PRODUCTS = [
     price: 6000,
     unit: "per kg",
     image: "🐔",
+    photo: "images/products/chicken-wings.jpg",
     description: "Fresh chicken wings, sold by the kilo."
   },
   {
@@ -45,6 +51,7 @@ const PRODUCTS = [
     price: 6000,
     unit: "per kg",
     image: "🐔",
+    photo: "images/products/chicken-gizzard.jpg",
     description: "Fresh chicken gizzards, sold by the kilo."
   },
   {
@@ -54,6 +61,7 @@ const PRODUCTS = [
     price: 3200,
     unit: "per kg",
     image: "🐔",
+    photo: "images/products/chicken-head-feet.jpg",
     description: "Chicken head and feet for stock and pepper soup, sold by the kilo."
   },
   {
@@ -63,6 +71,7 @@ const PRODUCTS = [
     price: 15000,
     unit: "per each",
     image: "🐔",
+    photo: "images/products/whole-chicken.jpg",
     description: "One whole fresh chicken."
   },
   {
@@ -72,7 +81,8 @@ const PRODUCTS = [
     price: 7500,
     unit: "per pack",
     image: "🔥",
-    description: "Ready-to-eat smoked chicken, packed per serving."
+    photo: "images/products/smoked-chicken-pack.jpg",
+    description: "Smoked chicken, packed per kg."
   },
   {
     id: "smoked-chicken-laps",
@@ -81,31 +91,34 @@ const PRODUCTS = [
     price: 7500,
     unit: "per pack",
     image: "🔥",
-    description: "Smoked chicken laps, packed and ready to eat."
+    photo: "images/products/smoked-chicken-laps.jpg",
+    description: "Smoked chicken laps, packed per kg."
   },
   {
     id: "smoked-turkey-pack",
     name: "Smoked Turkey Pack",
     category: "Turkey",
-    price: 15500,
+    price: 18000,
     unit: "per pack",
     image: "🦃",
-    description: "Ready-to-eat smoked turkey, packed per serving."
+    photo: "images/products/smoked-turkey-pack.jpg",
+    description: "Smoked turkey, packed per kg."
   },
   {
     id: "smoked-mackerel-pack",
     name: "Smoked Mackerel Pack",
     category: "Fish",
-    price: 12000,
+    price: 15000,
     unit: "per pack",
     image: "🐟",
-    description: "Smoked mackerel, packed and ready to eat."
+    photo: "images/products/smoked-mackerel-pack.jpg",
+    description: "Smoked mackerel (3 pieces), packed."
   },
   {
     id: "bulk-5kg-chicken-quarters",
     name: "5kg Chicken Quarters",
     category: "Bulk Packs",
-    price: 25000,
+    price: 29000,
     unit: "per 5kg box",
     image: "📦",
     description: "Five-kilo box of fresh chicken quarters."
@@ -114,7 +127,7 @@ const PRODUCTS = [
     id: "bulk-5kg-chicken-laps",
     name: "5kg Chicken Laps",
     category: "Bulk Packs",
-    price: 28500,
+    price: 29000,
     unit: "per 5kg box",
     image: "📦",
     description: "Five-kilo box of fresh chicken laps."
@@ -150,50 +163,50 @@ const PRODUCTS = [
     id: "bulk-5kg-smoked-turkey-box",
     name: "5kg Smoked Turkey Box",
     category: "Bulk Packs",
-    price: 75000,
+    price: 88000,
     unit: "per 5kg box",
     image: "📦",
     description: "Five-kilo box of smoked turkey."
   },
   {
-    id: "bulk-10kg-turkey-quarters",
-    name: "10kg Turkey Quarters",
+    id: "bulk-10kg-fresh-turkey",
+    name: "10kg Fresh Turkey",
     category: "Bulk Packs",
-    price: 58000,
+    price: 100000,
     unit: "per 10kg box",
     image: "📦",
-    description: "Ten-kilo box of fresh turkey quarters."
+    description: "Ten-kilo box of fresh turkey blankets."
   },
   {
     id: "platter-20pc-chicken",
     name: "20-Piece Chicken Platter",
     category: "Platters & Bundles",
-    price: 37000,
+    price: 45000,
     unit: "per platter",
     image: "🍽️",
-    description: "Platter of 20 pieces of grilled chicken, made for sharing."
+    description: "Platter of 20 pieces of grilled chicken ready-to-eat, made for sharing."
   },
   {
     id: "platter-bbq-gizzards",
     name: "BBQ Chicken Gizzards",
     category: "Platters & Bundles",
-    price: 35000,
+    price: 50000,
     unit: "per platter",
     image: "🍽️",
-    description: "Grilled chicken gizzards, served as a platter."
+    description: "20 grilled chicken gizzards, on skewers, ready-to-eat, served as a platter."
   },
   {
-    id: "platter-love-bbq-combo",
-    name: "Love (BBQ Combo) Platter",
+    id: "platter-mixed-bbq-combo",
+    name: "Mixed (BBQ Combo) Platter",
     category: "Platters & Bundles",
-    price: 35000,
+    price: 65000,
     unit: "per platter",
     image: "🍽️",
-    description: "Mixed BBQ combo platter for two."
+    description: "Mixed BBQ combo platter: turkey, chicken, mackerel."
   },
   {
-    id: "platter-fried-plantain",
-    name: "Fried Plantain Platter",
+    id: "platter-fried-plantain-yam-potatoes",
+    name: "Fried Plantain, Yam, Potatoes Platter",
     category: "Platters & Bundles",
     price: 10000,
     unit: "per platter",
@@ -201,10 +214,10 @@ const PRODUCTS = [
     description: "Platter of fried plantain, a side for grills."
   },
   {
-    id: "bundle-smoky-goodness",
-    name: "Smoky-Goodness Bundle",
+    id: "bundle-smokey-goodness",
+    name: "Smokey-Goodness Bundle",
     category: "Platters & Bundles",
-    price: 57500,
+    price: 60000,
     unit: "per bundle",
     image: "🍽️",
     description: "Value bundle from the Smoky-Goodness range."

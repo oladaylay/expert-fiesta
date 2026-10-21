@@ -62,4 +62,4 @@ Google Maps listings come from a **Google Business Profile**, not from web hosti
 
 ## Content notes
 
-Contact details (phone, email, Instagram) are live. Product catalog (`products.js`) has real Chow Republic products and pricing from invoice history — update prices there as they change, and swap in real photos when ready.
+Contact details (phone, email, Instagram) are live. Product catalog (`products.js`) has real Chow Republic products and pricing — update prices there as they change. 11 of the 23 active products have real photos (`images/products/`); the rest still use emoji placeholders until photos are supplied. The 29 items not invoiced since 2025 are included with their last-quoted prices — confirm before relying on them.

@@ -19,7 +19,9 @@ function renderCart() {
   body.innerHTML = lines.map(line => `
     <tr data-id="${line.product.id}">
       <td class="cart-product">
-        <span class="cart-emoji">${line.product.image}</span>
+        ${line.product.photo
+          ? `<img class="cart-thumb" src="${line.product.photo}" alt="${line.product.name}" loading="lazy">`
+          : `<span class="cart-emoji">${line.product.image}</span>`}
         <div>
           <div class="cart-name">${line.product.name}</div>
           <div class="cart-unit">${line.product.unit} · ${formatNaira(line.product.price)}</div>

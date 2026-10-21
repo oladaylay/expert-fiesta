@@ -13,10 +13,16 @@ function renderCategoryTabs() {
   });
 }
 
+function productImageHtml(product) {
+  if (!product.photo) return product.image;
+  const position = product.photoPosition || "center";
+  return `<img src="${product.photo}" alt="${product.name}" loading="lazy" style="object-position: ${position}">`;
+}
+
 function productCard(product) {
   return `
     <div class="product-card" data-id="${product.id}">
-      <div class="product-image">${product.image}</div>
+      <div class="product-image">${productImageHtml(product)}</div>
       <div class="product-body">
         <span class="product-category">${product.category}</span>
         <h3>${product.name}</h3>
