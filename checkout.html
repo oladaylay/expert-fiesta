@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cart & Checkout | Chow Republic Ltd</title>
+<meta name="description" content="Review your cart and pay securely online with Chow Republic Ltd.">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header" id="top">
+  <div class="container header-inner">
+    <a class="brand" href="index.html">
+      <img class="brand-logo" src="images/logo.png" alt="Chow Republic Ltd">
+    </a>
+    <nav class="nav" id="nav">
+      <a href="index.html#about">About</a>
+      <a href="shop.html">Shop</a>
+      <a href="index.html#why">Why Us</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+    <a class="btn btn-ghost cart-link active" href="checkout.html">
+      Cart <span class="cart-badge" data-cart-count>0</span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">Cart &amp; Checkout</p>
+      <h1 class="page-title">Your order</h1>
+
+      <div id="paystackWarning" class="warning-banner" style="display:none">
+        Online payment isn't configured on this site yet. You can still browse and build a cart, but checkout is disabled until a Paystack key is added.
+      </div>
+
+      <div id="emptyCart" class="empty-state" style="display:none">
+        <p>Your cart is empty.</p>
+        <a class="btn btn-primary" href="shop.html">Browse Products</a>
+      </div>
+
+      <table id="cartTable" class="cart-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="cartBody"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2" class="cart-total-label">Total</td>
+            <td id="cartTotal" class="cart-total-value">₦0</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div id="checkoutFormSection" class="checkout-grid">
+        <form id="checkoutForm" class="contact-form">
+          <h2>Delivery details</h2>
+          <label>
+            Full Name
+            <input type="text" name="name" required>
+          </label>
+          <label>
+            Phone Number
+            <input type="tel" name="phone" required>
+          </label>
+          <label>
+            Email (for payment receipt)
+            <input type="email" name="email" required>
+          </label>
+          <label>
+            Delivery Address
+            <textarea name="address" rows="3" required></textarea>
+          </label>
+          <label>
+            Business Name (optional)
+            <input type="text" name="business">
+          </label>
+          <label>
+            Order Notes (optional)
+            <textarea name="notes" rows="2" placeholder="Preferred delivery time, special instructions..."></textarea>
+          </label>
+          <button type="submit" id="payBtn" class="btn btn-primary">Pay with Paystack</button>
+          <p class="form-note">You'll be redirected to Paystack's secure checkout to complete payment by card, bank transfer or USSD.</p>
+        </form>
+
+        <div class="order-help">
+          <h2>Need a bigger order?</h2>
+          <p>For very large or recurring bulk orders, reach out directly and we'll arrange pricing and delivery.</p>
+          <ul class="contact-list">
+            <li>
+              <span class="contact-label">Phone / WhatsApp</span>
+              <a href="tel:+2349079051194">+234 907 905 1194</a>
+            </li>
+            <li>
+              <span class="contact-label">Email</span>
+              <a href="mailto:republicchow@gmail.com">republicchow@gmail.com</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="orderConfirmation" class="order-confirmation" style="display:none">
+        <h2>Thank you — your order is in!</h2>
+        <p>Payment reference: <strong id="confirmationRef"></strong></p>
+        <p>Amount paid: <strong id="confirmationTotal"></strong></p>
+        <p>A payment receipt has been sent to your email. Chow Republic will contact you shortly to confirm delivery.</p>
+        <a class="btn btn-primary" href="shop.html">Continue Shopping</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p>&copy; <span id="year"></span> Chow Republic Ltd. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="tel:+2349079051194">+234 907 905 1194</a>
+      <a href="mailto:republicchow@gmail.com">republicchow@gmail.com</a>
+      <a href="https://www.instagram.com/chow.republic" target="_blank" rel="noopener noreferrer">Instagram</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script src="config.js"></script>
+<script src="products.js"></script>
+<script src="cart.js"></script>
+<script src="common.js"></script>
+<script src="checkout.js"></script>
+</body>
+</html>
