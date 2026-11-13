@@ -77,8 +77,7 @@ function showPaystackWarningIfNeeded() {
   }
 }
 
-function showConfirmation(reference) {
-  const total = getCartTotal();
+function showConfirmation(reference, total) {
   document.getElementById("checkoutFormSection").style.display = "none";
   document.getElementById("cartTable").style.display = "none";
   const confirmation = document.getElementById("orderConfirmation");
@@ -134,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       callback: function (response) {
         clearCart();
-        showConfirmation(response.reference);
+        showConfirmation(response.reference, total);
       },
       onClose: function () {
         // Customer closed the payment popup without paying — cart is left intact.
